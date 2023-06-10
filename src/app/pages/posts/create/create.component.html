@@ -2,9 +2,10 @@
   <div class="container page">
     <div class="row">
       <div class="col-md-10 col-md-offset-1 col-xs-12">
-        <form>
+        <form [formGroup]="form" (ngSubmit)="createPost()">
           <fieldset class="form-group">
             <input
+              formControlName="title"
               class="form-control form-control-lg"
               type="text"
               placeholder="Post Title"
@@ -12,6 +13,7 @@
           </fieldset>
           <fieldset class="form-group">
             <textarea
+              formControlName="description"
               class="form-control"
               rows="3"
               placeholder="Description"
@@ -19,23 +21,23 @@
           </fieldset>
           <fieldset class="form-group">
             <textarea
+              [formControl]="postBody"
               class="form-control"
               rows="8"
               placeholder="Post body"
             ></textarea>
           </fieldset>
           <fieldset class="form-group">
-            <input class="form-control" type="text" placeholder="Enter tags" />
+            <input
+              #tagInput
+              class="form-control" type="text" placeholder="Enter tags"
+              (keydown.enter)="$event.preventDefault()"
+              (keyup.enter)="addTag(tagInput.value); tagInput.value = ''" />
             <div class="tag-list">
-              <span class="label label-pill label-default">
-                <i class="ion-close-round"></i> programming</span
+              <span class="label label-pill label-default" *ngFor="let control of postTags.controls; let index = index">
+                <i class="ion-close-round" (click)="removeTag(index)"></i> {{ control.value }}</span
               >
-              <span class="label label-pill label-default">
-                <i class="ion-close-round"></i> javascript</span
-              >
-              <span class="label label-pill label-default">
-                <i class="ion-close-round"></i> webdev</span
-              >
+
             </div>
           </fieldset>
           <button type="submit" class="btn btn-lg btn-primary pull-xs-right">
