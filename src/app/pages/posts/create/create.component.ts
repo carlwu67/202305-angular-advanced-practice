@@ -1,15 +1,25 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { PostService } from 'src/app/post.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create.component.html',
-  styleUrls: ['./create.component.css']
+  styleUrls: ['./create.component.css'],
 })
 export default class CreateComponent {
+  router = inject(Router);
+  postService = inject(PostService);
   formBuilder = inject(FormBuilder);
 
   // body = this.formBuilder.control('');
@@ -25,15 +35,16 @@ export default class CreateComponent {
     title: this.formBuilder.control('Title 1', [Validators.required]),
     description: this.formBuilder.control(''),
     // body: this.formBuilder.control('', [ Validators.required, Validators.minLength(10) ]),
-    body: this.formBuilder.control('', Validators.compose([Validators.required, Validators.minLength(10)])),
+    body: this.formBuilder.control(
+      '',
+      Validators.compose([Validators.required, Validators.minLength(10)])
+    ),
 
     tags: this.formBuilder.array([
-
       this.formBuilder.control('HTML'),
       this.formBuilder.control('CSS'),
       this.formBuilder.control('JavaScript'),
-
-    ])
+    ]),
   });
 
   get postBody() {
@@ -54,9 +65,18 @@ export default class CreateComponent {
   }
 
   createPost() {
-    if(this.form.invalid){
+    if (this.form.invalid) {
       return;
     }
     console.log(this.form.value);
+    const data = {
+      title: this.form.value.title || '',
+      description: this.form.value.description || '',
+      body: this.form.value.body || '',
+      tagList: (this.form.value.tags || []) as string[],
+    };
+    this.postService.createArticle(data).subscribe(() => {
+      this.router.navigateByUrl('/');
+    });
   }
 }
