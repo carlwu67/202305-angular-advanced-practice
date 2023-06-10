@@ -11,6 +11,13 @@
               placeholder="Post Title"
             />
           </fieldset>
+
+          <div *ngIf="form.get('title')?.invalid">
+            <div *ngIf="form.get('title')?.hasError('required')">
+              Title 為必填
+            </div>
+          </div>
+
           <fieldset class="form-group">
             <textarea
               formControlName="description"
@@ -27,20 +34,42 @@
               placeholder="Post body"
             ></textarea>
           </fieldset>
+
+          <div *ngIf="form.get('body')?.invalid">
+            <div *ngIf="form.get('body')?.hasError('required')">
+              Body 為必填
+            </div>
+
+            <div *ngIf="form.get('body')?.hasError('minlength')">
+              Body 最少要
+              {{ form.get("body")?.getError("minlength").requiredLength }} 個字
+            </div>
+          </div>
+
           <fieldset class="form-group">
             <input
               #tagInput
-              class="form-control" type="text" placeholder="Enter tags"
+              class="form-control"
+              type="text"
+              placeholder="Enter tags"
               (keydown.enter)="$event.preventDefault()"
-              (keyup.enter)="addTag(tagInput.value); tagInput.value = ''" />
+              (keyup.enter)="addTag(tagInput.value); tagInput.value = ''"
+            />
             <div class="tag-list">
-              <span class="label label-pill label-default" *ngFor="let control of postTags.controls; let index = index">
-                <i class="ion-close-round" (click)="removeTag(index)"></i> {{ control.value }}</span
+              <span
+                class="label label-pill label-default"
+                *ngFor="let control of postTags.controls; let index = index"
               >
-
+                <i class="ion-close-round" (click)="removeTag(index)"></i>
+                {{ control.value }}</span
+              >
             </div>
           </fieldset>
-          <button type="submit" class="btn btn-lg btn-primary pull-xs-right">
+          <button
+            [disabled]="form.invalid"
+            type="submit"
+            class="btn btn-lg btn-primary pull-xs-right"
+          >
             Create Post
           </button>
         </form>

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create',
@@ -22,9 +22,11 @@ export default class CreateComponent {
   // });
 
   form = this.formBuilder.group({
-    title: this.formBuilder.control('Title 1'),
+    title: this.formBuilder.control('Title 1', [Validators.required]),
     description: this.formBuilder.control(''),
-    body: this.formBuilder.control(''),
+    // body: this.formBuilder.control('', [ Validators.required, Validators.minLength(10) ]),
+    body: this.formBuilder.control('', Validators.compose([Validators.required, Validators.minLength(10)])),
+
     tags: this.formBuilder.array([
 
       this.formBuilder.control('HTML'),
@@ -52,6 +54,9 @@ export default class CreateComponent {
   }
 
   createPost() {
+    if(this.form.invalid){
+      return;
+    }
     console.log(this.form.value);
   }
 }
