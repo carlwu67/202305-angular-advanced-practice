@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LoginService } from 'src/app/login.service';
 import { map } from 'rxjs';
@@ -13,7 +13,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export default class LoginComponent {
+export default class LoginComponent implements OnInit {
+  route = inject(ActivatedRoute);
   router = inject(Router);
   loginService = inject(LoginService);
 
@@ -21,6 +22,15 @@ export default class LoginComponent {
     email: '',
     password: '',
   };
+
+  redirectUrl = '/';
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      this.redirectUrl = params.get('redirect') || '/';
+      console.log(params.get('redirect'));
+    });
+  }
 
   login() {
     console.log(this.user);
@@ -31,7 +41,7 @@ export default class LoginComponent {
         next: (token) => {
           console.log(token);
           localStorage.setItem('token', token);
-          this.router.navigateByUrl('/');
+          this.router.navigateByUrl(this.redirectUrl);
         },
         error: (err: HttpErrorResponse) => {
           console.log(err.error.body[0]);
